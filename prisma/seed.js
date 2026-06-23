@@ -10,6 +10,7 @@
 //
 // All prices are in MINOR UNITS (cents). 1499 == $14.99.
 
+/* eslint-env node */
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
