@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
+// enough when changing adapters.
+// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+// ---------------------------------------------------------------------------
+// ZIP-code dynamic pricing
+// All `price` fields are stored in MINOR UNITS (cents). 1499 == $14.99.
+// ---------------------------------------------------------------------------
+
+// One pricing zone, keyed by the first 3 digits of a US ZIP (the "ZIP3").
+// e.g. zip3 "750" -> "DFW Metro" -> 1499 cents. Any ZIP starting 750xx maps
+// here; ZIPs with no exact zone fall back to the nearest zone or the default.
+model PricingRule {
+  id        String   @id @default(cuid())
+  shop      String
+  zoneLabel String // human label, e.g. "DFW Metro"
+  zip3      String // first 3 digits of the ZIP, e.g. "750"
+  price     Int // minor units (cents)
+  currency  String   @default("USD")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([shop, zip3])
+  @@index([shop, zip3])
+}
+
+// The base/fallback price used when a ZIP matches no zone and has no nearby
+// zone. One row per shop.
+model PricingDefault {
+  id       String @id @default(cuid())
+  shop     String @unique
+  price    Int // minor units (cents)
+  currency String @default("USD")
+}
+
+// Analytics: every storefront price lookup is logged here. Powers the
+// "recent lookups" and "most-requested ZIPs/zones" dashboard — the data that
+// makes this a saleable product (demand-by-geography).
+model LookupEvent {
+  id        String   @id @default(cuid())
+  shop      String
+  zip       String
+  zip3      String
+  zone      String?
+  variantId String?
+  price     Int? // minor units (cents)
+  served    Boolean // true = we have a zone/nearby zone for this ZIP
+  match     String? // "exact" | "nearest" | "default"
+  createdAt DateTime @default(now())
+
+  @@index([shop, createdAt])
+  @@index([shop, zip3])
+}

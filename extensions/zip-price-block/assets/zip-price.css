@@ -1,0 +1,96 @@
+/* ZIP-code dynamic pricing widget. Neutral styling that inherits the theme's
+   fonts/colors where possible; scoped under .zipprice to avoid collisions. */
+
+.zipprice {
+  margin: 1rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.zipprice__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.zipprice__row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: stretch;
+}
+
+.zipprice__input {
+  flex: 1 1 8rem;
+  min-width: 7rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  font: inherit;
+  background: transparent;
+}
+
+.zipprice__button {
+  padding: 0.55rem 1.1rem;
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: #111;
+}
+
+.zipprice__button:hover {
+  opacity: 0.9;
+}
+
+.zipprice__result {
+  margin-top: 0.6rem;
+  min-height: 1.4em;
+}
+
+.zipprice__result--invalid,
+.zipprice__result--error {
+  color: #b3261e;
+}
+
+.zipprice__result--loading {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.zipprice__price {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.zipprice__zone {
+  display: block;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.zipprice__note {
+  display: block;
+  font-size: 0.85rem;
+  color: #8a6d00;
+}
+
+.zipprice__spinner {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  vertical-align: -0.1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: zipprice-spin 0.7s linear infinite;
+}
+
+@keyframes zipprice-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

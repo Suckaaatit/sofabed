@@ -1,0 +1,57 @@
+# This file stores configurations for your Shopify app.
+client_id = ""
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+# App Proxy: storefront requests to /apps/pricing/* are signed by Shopify and
+# proxied to <url>/* on this app. So /apps/pricing/estimate -> <url>/estimate,
+# which (with url ending in /proxy) maps to app/routes/proxy.estimate.tsx.
+#
+# IMPORTANT:
+#  - `url` must point at the CURRENT dev tunnel (it changes each `shopify app dev`
+#    unless reserved). The CLI usually rewrites this on dev; if the proxy 404s,
+#    confirm it matches the running tunnel, e.g.
+#    https://<tunnel>.trycloudflare.com/proxy
+#  - `prefix` and `subpath` are IMMUTABLE after install. To change them you must
+#    uninstall/reinstall the app. Set them before the first install.
+[app_proxy]
+url = "https://example.trycloudflare.com/proxy"
+prefix = "apps"
+subpath = "pricing"
+
+[webhooks]
+api_version = "2025-10"
+
+  # Handled by: /app/routes/webhooks.app.uninstalled.tsx
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = ["app/uninstalled"]
+
+  # Handled by: /app/routes/webhooks.app.scopes_update.tsx
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  # Webhooks can have filters
+  # Only receive webhooks for product updates with a product price >= 10.00
+  # See: https://shopify.dev/docs/apps/build/webhooks/customize/filters
+  # [[webhooks.subscriptions]]
+  # topics = ["products/update"]
+  # uri = "/webhooks/products/update"
+  # filter = "variants.price:>=10.00"
+
+  # Mandatory compliance topic for public apps only
+  # See: https://shopify.dev/docs/apps/build/privacy-law-compliance
+  # [[webhooks.subscriptions]]
+  # uri = "/webhooks/customers/data_request"
+  # compliance_topics = ["customers/data_request"]
+
+  # [[webhooks.subscriptions]]
+  # uri = "/webhooks/customers/redact"
+  # compliance_topics = ["customers/redact"]
+
+  # [[webhooks.subscriptions]]
+  # uri = "/webhooks/shop/redact"
+  # compliance_topics = ["shop/redact"]

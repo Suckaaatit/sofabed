@@ -1,0 +1,90 @@
+{%- comment -%}
+  ZIP-code dynamic pricing app block.
+
+  Merchant drops this onto the product template in the theme editor (it targets
+  "section", so it appears in the product page's section/block list). It renders
+  a ZIP input + "Check Price" button, and on submit calls the app proxy at the
+  RELATIVE path /apps/pricing/estimate. Relative is critical: it keeps the call
+  same-origin through Shopify's proxy, which avoids CORS and lets the backend
+  verify the request signature. Never point this at the app/tunnel URL directly.
+
+  The current variant id is read from {{ product.selected_or_first_available_variant }}
+  on render and kept in sync client-side when the shopper switches variants.
+{%- endcomment -%}
+
+<div
+  class="zipprice"
+  data-zipprice
+  data-proxy-url="{{ shop.url }}/apps/pricing/estimate"
+  data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+  data-unserved-text="{{ block.settings.unserved_text | escape }}"
+  data-invalid-text="{{ block.settings.invalid_text | escape }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.label != blank -%}
+    <label class="zipprice__label" for="zipprice-input-{{ block.id }}">
+      {{ block.settings.label }}
+    </label>
+  {%- endif -%}
+
+  <div class="zipprice__row">
+    <input
+      class="zipprice__input"
+      id="zipprice-input-{{ block.id }}"
+      type="text"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      maxlength="5"
+      autocomplete="postal-code"
+      placeholder="{{ block.settings.placeholder }}"
+      data-zipprice-input
+    >
+    <button type="button" class="zipprice__button" data-zipprice-submit>
+      {{ block.settings.button_text }}
+    </button>
+  </div>
+
+  <div class="zipprice__result" data-zipprice-result aria-live="polite"></div>
+</div>
+
+{% schema %}
+{
+  "name": "ZIP Price Check",
+  "target": "section",
+  "stylesheet": "zip-price.css",
+  "javascript": "zip-price.js",
+  "templates": ["product"],
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Check price for your ZIP code"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input placeholder",
+      "default": "Enter ZIP code"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Check Price"
+    },
+    {
+      "type": "text",
+      "id": "invalid_text",
+      "label": "Invalid ZIP message",
+      "default": "Please enter a valid 5-digit ZIP code."
+    },
+    {
+      "type": "text",
+      "id": "unserved_text",
+      "label": "Out-of-zone message",
+      "default": "We don't have pricing for your area yet — showing our standard price."
+    }
+  ]
+}
+{% endschema %}
