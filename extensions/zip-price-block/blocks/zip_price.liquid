@@ -15,7 +15,7 @@
 <div
   class="zipprice"
   data-zipprice
-  data-proxy-url="/apps/pricing/estimate"
+  data-proxy-url="{{ block.settings.api_url | default: 'https://sofabed-demo.vercel.app/api/estimate' }}"
   data-variant-id="{{ product.selected_or_first_available_variant.id }}"
   data-unserved-text="{{ block.settings.unserved_text | escape }}"
   data-invalid-text="{{ block.settings.invalid_text | escape }}"
@@ -84,6 +84,12 @@
       "id": "unserved_text",
       "label": "Out-of-zone message",
       "default": "We don't have pricing for your area yet — showing our standard price."
+    },
+    {
+      "type": "text",
+      "id": "api_url",
+      "label": "Pricing backend URL",
+      "default": "https://sofabed-demo.vercel.app/api/estimate"
     }
   ]
 }
